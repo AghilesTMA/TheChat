@@ -6,6 +6,7 @@ import cors from 'cors';
 import authRouter from "./routes/authRoute.js";
 import cookieParser from "cookie-parser";
 import messagesRouter from "./routes/messagesRoute.js";
+import usersRouter from "./routes/usersRoute.js";
 
 const app = express();
 app.use(cors());
@@ -15,6 +16,7 @@ app.use(cookieParser());
 
 app.use("/auth",authRouter);
 app.use("/messages",messagesRouter);
+app.use("/users",usersRouter);
 
 
 app.get("/", (_, res) => {
