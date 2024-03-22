@@ -2,7 +2,8 @@ import { Message } from "../models/Message.js";
 
 const addMessage = async (req, res) => {
   try {
-    const { from, to, text } = req.body;
+    const from = req.userId;
+    const { to, text } = req.body;
 
     const messageData = {
       sender: from,
@@ -25,7 +26,8 @@ const addMessage = async (req, res) => {
 
 const getAllMessages = async (req, res) => {
   try {
-    const { from, to } = req.body;
+    const from = req.userId;
+    const { to } = req.body;
     const messages = await Message.find({ users: { $all: [from, to] } }).sort({
       updatedAt: 1,
     });

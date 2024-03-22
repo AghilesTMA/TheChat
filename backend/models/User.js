@@ -21,6 +21,12 @@ const userSchema = new mongoose.Schema(
       default: "avatar1",
       required: true,
     },
+    contacts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
   },
   { timestamps: true }
 );
