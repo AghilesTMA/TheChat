@@ -42,7 +42,7 @@ const signUp = async (req, res) => {
     res.cookie("jwt", token, {
       httpOnly: true,
       secure: false,
-      sameSite: "None",
+      sameSite: "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -79,7 +79,7 @@ const logIn = async (req, res) => {
     res.cookie("jwt", token, {
       httpOnly: true,
       secure: false,
-      sameSite: "None",
+      sameSite: "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
@@ -106,7 +106,7 @@ const logOut = async (req, res) => {
 const verifyLogIn = async (req, res) => {
   try {
     const token = req.cookies.jwt;
-    if (!token) res.status(400).json({ message: "not logged in!" });
+    if (!token) return res.status(400).json({ message: "not logged in!" });
     jwt.verify(token, process.env.TOKEN_SECRET, (err, decoded) => {
       if (err) return res.status(403).json({ message: "Forbidden!" });
       const userData = {

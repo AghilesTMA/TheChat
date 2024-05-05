@@ -7,9 +7,12 @@ import authRouter from "./routes/authRoute.js";
 import cookieParser from "cookie-parser";
 import messagesRouter from "./routes/messagesRoute.js";
 import usersRouter from "./routes/usersRoute.js";
+import Credentials from "./middleware/Credentials.js";
 
 const app = express();
-app.use(cors());
+app.use(Credentials);
+const whiteList = ["http://localhost:5173"];
+app.use(cors({origin:whiteList}));
 app.use(express.json());
 app.use(cookieParser());
 
