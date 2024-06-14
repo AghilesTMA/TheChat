@@ -2,7 +2,7 @@ import express from "express";
 import "dotenv/config";
 import mongoose from "mongoose";
 import { PORT } from "./config.js";
-import cors from 'cors';
+import cors from "cors";
 import authRouter from "./routes/authRoute.js";
 import cookieParser from "cookie-parser";
 import messagesRouter from "./routes/messagesRoute.js";
@@ -12,15 +12,13 @@ import Credentials from "./middleware/Credentials.js";
 const app = express();
 app.use(Credentials);
 const whiteList = ["http://localhost:5173"];
-app.use(cors({origin:whiteList}));
+app.use(cors({ origin: whiteList }));
 app.use(express.json());
 app.use(cookieParser());
 
-
-app.use("/auth",authRouter);
-app.use("/messages",messagesRouter);
-app.use("/users",usersRouter);
-
+app.use("/auth", authRouter);
+app.use("/messages", messagesRouter);
+app.use("/users", usersRouter);
 
 app.get("/", (_, res) => {
   return res.status(200).json({ message: "Hello there!" });
@@ -32,4 +30,4 @@ mongoose
     console.log("Connected to database");
     app.listen(PORT, () => console.log(`App running on port ${PORT}`));
   })
-  .catch((err) => console.err(err));
+  .catch((err) => console.log(err));

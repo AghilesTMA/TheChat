@@ -11,7 +11,7 @@ const usersRouter = express.Router();
 usersRouter.use(verifyJwt);
 
 usersRouter
-  .post("/getuser", getUserByName)
+  .get("/getuser", getUserByName)
   .patch("/addcontact", addContact)
   .patch("/removecontact", removeContact)
   .get("/getcontacts", getContacts);

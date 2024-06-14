@@ -23,8 +23,8 @@ const LogIn = () => {
             type={"password"}
             label={"password: "}
           />
-          <button className="py-2 px-6 shadow text-white font-semibold bg-blue-primary rounded">
-            Sign Up
+          <button type="submit" className="py-2 px-6 shadow text-white font-semibold bg-blue-primary rounded">
+            Log In
           </button>
         </form>
       </div>
