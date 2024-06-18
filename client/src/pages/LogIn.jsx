@@ -3,11 +3,13 @@ import PageContainer from "../components/PageContainer";
 import InputField from "../components/InputField";
 import axios from "axios";
 import { AuthContext } from "../context/AuthProvider";
+import { ChatContext } from "../context/ChatProvider";
 
 const LogIn = () => {
   const [email, setEmail] = useState("");
   const [passWord, setPassWord] = useState("");
   const { setUserData } = useContext(AuthContext);
+  const { dispatch } = useContext(ChatContext);
 
   const handleLogIn = async (e) => {
     e.preventDefault();
@@ -21,8 +23,13 @@ const LogIn = () => {
         },
         withCredentials: true,
       });
-      console.log(res.data);
-      setUserData({ ...res.data.data });
+      const data = {
+        userName: res.data.data.userName,
+        avatar: res.data.data.avatar,
+        id: res.data.data.id,
+      };
+      setUserData(data);
+      dispatch({ type: "SET_MY_LIST", payload: res.data.data.contacts });
     } catch (error) {
       console.log(error);
     }

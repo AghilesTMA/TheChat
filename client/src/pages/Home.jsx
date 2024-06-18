@@ -1,11 +1,12 @@
-import React, { useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import PageContainer from "../components/PageContainer";
 import avatar1 from "../assets/avatar1.png";
-import avatar2 from "../assets/avatar2.png";
-import avatar3 from "../assets/avatar3.png";
 import Icon from "../components/Icon";
+import Avatar from "../components/Avatar";
+import axios from "axios";
+import { ChatContext } from "../context/ChatProvider";
 
-const ChatBody = ({ currContact, userName }) => {
+const ChatBody = ({ userName }) => {
   const [msgs, setMsgs] = useState([
     { msg: "hello there!", sender: "achraf" },
     { msg: "hello, how are you doing?", sender: "aghiles" },
@@ -71,7 +72,7 @@ const ContactCard = ({ avatar, userName, contact }) => {
   return (
     <div className=" flex gap-2 bg-white p-2 justify-between items-center">
       <div className=" flex gap-2 cursor-pointer">
-        <img src={avatar} alt="avatar" className=" rounded-full w-12 h-1/2" />
+        <Avatar avatar={avatar} className=" rounded-full w-12 h-1/2" />
         <span className=" font-semibold text-lg">{userName}</span>
       </div>
       <div>
@@ -92,20 +93,43 @@ const ContactCard = ({ avatar, userName, contact }) => {
 };
 
 const SearchContact = () => {
+  const [contacts, setContacts] = useState([]);
+  const [userName, setUserName] = useState("");
+  const { myList } = useContext(ChatContext);
+
+  const handleSearch = async (e) => {
+    if (e.key === "Enter") {
+      try {
+        const res = await axios({
+          method: "get",
+          url: `http://localhost:3000/users/getuser/${userName}`,
+          withCredentials: true,
+        });
+        setContacts(res.data.users);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      return;
+    }
+  };
   return (
     <div className="p-2 w-full bg-bg-primary rounded-b-lg flex flex-col gap-2">
       <input
+        onKeyDown={handleSearch}
         type="text"
+        value={userName}
+        onChange={(e) => setUserName(e.target.value)}
         className=" p-2 rounded-full shadow w-full"
         placeholder="Type the name"
       />
       <div className=" flex flex-col gap-2 max-h-64 overflow-auto">
-        {[...new Array(8)].map((_, idx) => (
+        {contacts?.map((user) => (
           <ContactCard
-            key={idx}
-            avatar={avatar3}
-            userName={"User Name"}
-            contact={false}
+            key={user._id}
+            avatar={user.avatar}
+            userName={user.userName}
+            contact={myList.includes(user._id)}
           />
         ))}
       </div>
@@ -114,11 +138,34 @@ const SearchContact = () => {
 };
 
 const ContactList = () => {
+  const [contacts, setContacts] = useState([]);
+  const { myList } = useContext(ChatContext);
+
+  useEffect(() => {
+    const getContacts = async () => {
+      try {
+        const res = await axios({
+          method: "get",
+          url: "http://localhost:3000/users/getcontacts",
+          withCredentials: true,
+        });
+        setContacts(res.data.data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getContacts();
+  }, []);
   return (
     <div className=" p-2 bg-bg-primary w-full">
       <div className=" flex flex-col gap-2 p-2 max-h-80 overflow-auto w-full">
-        {[...new Array(8)].map(() => (
-          <ContactCard avatar={avatar2} userName={"User Name"} contact={true} />
+        {contacts.map((contact) => (
+          <ContactCard
+            key={contact._id}
+            avatar={contact.avatar}
+            userName={contact.userName}
+            contact={myList.includes(contact._id)}
+          />
         ))}
       </div>
     </div>
@@ -168,5 +215,5 @@ const Home = () => {
     </PageContainer>
   );
 };
-  
+
 export default Home;

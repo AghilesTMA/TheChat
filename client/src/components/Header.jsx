@@ -2,9 +2,11 @@ import axios from "axios";
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthProvider";
+import Icon from "./Icon";
+import Avatar from "../components/Avatar";
 
 const Header = ({ userName }) => {
-  const { setUserData } = useContext(AuthContext);
+  const { setUserData, avatar } = useContext(AuthContext);
 
   const handleLogOut = async () => {
     try {
@@ -23,6 +25,7 @@ const Header = ({ userName }) => {
       console.log(error);
     }
   };
+
   return (
     <div className=" flex p-2 items-center justify-between gap-2 bg-bg-secondary shadow">
       <Link to={"/"}>
@@ -31,10 +34,16 @@ const Header = ({ userName }) => {
       <div className=" flex items-center gap-2">
         {userName && (
           <>
-            <h3 className=" font-semibold text-xl">Hello {userName}!</h3>
-            <span onClick={handleLogOut} className=" cursor-pointer">
-              Log Out
-            </span>
+            <h3 className=" font-semibold text-lg">Hello {userName}!</h3>
+            <button onClick={handleLogOut}>
+              <Icon
+                type={"logOut"}
+                className={" text-2xl cursor-pointer hover:text-blue-active"}
+              />
+            </button>
+            <div className=" w-8 h-8 rounded-full cursor-pointer">
+              <Avatar avatar={avatar} className={"w-full rounded-full"} />
+            </div>
           </>
         )}
 

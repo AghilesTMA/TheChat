@@ -2,13 +2,13 @@ import { User } from "../models/User.js";
 
 const getUserByName = async (req, res) => {
   try {
-    const { name } = req.body;
+    const { name } = req.params;
     const regex = new RegExp(name, "i");
-    const users = await User.find({ userName: { $regex: regex } });
-    if (users.length>0) {
-      return res
-        .status(200)
-        .json({ message: "Users found!", users });
+    const users = await User.find({ userName: { $regex: regex } }).select(
+      "_id avatar userName"
+    );
+    if (users.length > 0) {
+      return res.status(200).json({ message: "Users found!", users });
     } else {
       return res.status(404).json({ message: "User not found!" });
     }
@@ -40,13 +40,7 @@ const getContacts = async (req, res) => {
     );
     if (!user) return res.status(404).json({ message: "Not Found!" });
     const { contacts } = user;
-    if (contacts.length < 1) {
-      return res
-        .status(200)
-        .json({ message: "this user doesn't have contacts!" });
-    } else {
-      return res.status(200).json({ data: [...contacts] });
-    }
+    return res.status(200).json({ data: [...contacts] });
   } catch (error) {
     console.error(error);
   }
@@ -67,4 +61,16 @@ const removeContact = async (req, res) => {
   }
 };
 
-export { getUserByName, addContact, getContacts, removeContact };
+const getMyList = async (req, res) => {
+  try {
+    const id = req.userId;
+    const user = await User.findById(id).populate("contacts", "_id");
+    if (!user) return res.status(404).json({ msg: "User not found!" });
+    const myList = user.contacts.map((contact) => contact._id);
+    return res.status(200).json(myList);
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export { getUserByName, addContact, getContacts, removeContact, getMyList };

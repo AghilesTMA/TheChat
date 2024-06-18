@@ -6,7 +6,7 @@ import "dotenv/config.js";
 const signUp = async (req, res) => {
   const salt = 10;
   try {
-    const { userName, email, passWord } = req.body;
+    const { userName, email, passWord, avatar } = req.body;
 
     if (!userName || !email || !passWord) {
       return res.status(400).json({ message: "All fields are required" });
@@ -26,13 +26,13 @@ const signUp = async (req, res) => {
     }
 
     const hashedPassWord = await bcrypt.hash(passWord, salt);
-    const newUserData = { userName, email, passWord: hashedPassWord };
+    const newUserData = { userName, email, passWord: hashedPassWord, avatar };
     const newUser = await User.create(newUserData);
 
     const userData = {
       id: newUser._id,
       userName: newUser.userName,
-      email,
+      avatar,
     };
 
     const token = jwt.sign(userData, process.env.TOKEN_SECRET, {
@@ -58,7 +58,11 @@ const signUp = async (req, res) => {
 const logIn = async (req, res) => {
   try {
     const { email, passWord } = req.body;
-    const foundUser = await User.findOne({ email });
+    const foundUser = await User.findOne({ email }).populate(
+      "contacts",
+      "_id"
+    );
+    const myList = foundUser.contacts.map((contact) => contact._id);
     if (!foundUser)
       return res.status(400).json({ message: "This user doesn't exist!" });
 
@@ -69,9 +73,10 @@ const logIn = async (req, res) => {
     const userData = {
       id: foundUser._id,
       userName: foundUser.userName,
-      avatar:foundUser.avatar
+      avatar: foundUser.avatar,
+      contacts: myList,
     };
-
+    
     const token = jwt.sign(userData, process.env.TOKEN_SECRET, {
       expiresIn: "3d",
     });

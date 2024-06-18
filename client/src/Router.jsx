@@ -13,9 +13,15 @@ const Router = () => {
     <div className=" bg-bg-primary h-screen">
       <Header userName={userName} />
       <Routes>
-        <Route path="/" element={id ? <Home /> : <LogIn />} />
-        <Route path="/login" element={!id ? <LogIn /> : <Home />} />
-        <Route path="/signup" element={!id ? <SignUp /> : <Home />} />
+        <Route path="/" element={id ? <Home /> : <Navigate to={"/login"} />} />
+        <Route
+          path="/login"
+          element={!id ? <LogIn /> : <Navigate to={"/"} />}
+        />
+        <Route
+          path="/signup"
+          element={!id ? <SignUp /> : <Navigate to={"/"} />}
+        />
         <Route path="/profile/:id" element={`Profile`} />
         <Route path="*" element={<Navigate to={"/"} />} />
       </Routes>
