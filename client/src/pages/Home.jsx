@@ -102,6 +102,7 @@ const SearchContact = () => {
       <div className=" flex flex-col gap-2 max-h-64 overflow-auto">
         {[...new Array(8)].map((_, idx) => (
           <ContactCard
+            key={idx}
             avatar={avatar3}
             userName={"User Name"}
             contact={false}

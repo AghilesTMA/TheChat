@@ -62,14 +62,14 @@ const logIn = async (req, res) => {
     if (!foundUser)
       return res.status(400).json({ message: "This user doesn't exist!" });
 
-    const goodPassword = bcrypt.compare(passWord, foundUser.passWord);
+    const goodPassword = await bcrypt.compare(passWord, foundUser.passWord);
     if (!goodPassword)
       return res.status(400).json({ message: "Wrong password!" });
 
     const userData = {
       id: foundUser._id,
       userName: foundUser.userName,
-      email,
+      avatar:foundUser.avatar
     };
 
     const token = jwt.sign(userData, process.env.TOKEN_SECRET, {
