@@ -8,8 +8,13 @@ import cookieParser from "cookie-parser";
 import messagesRouter from "./routes/messagesRoute.js";
 import usersRouter from "./routes/usersRoute.js";
 import Credentials from "./middleware/Credentials.js";
+import { createServer } from "http";
+import { Server } from "socket.io";
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer,{});
+
 app.use(Credentials);
 const whiteList = ["http://localhost:5173"];
 app.use(cors({ origin: whiteList }));
@@ -28,6 +33,13 @@ mongoose
   .connect(process.env.DB_URI)
   .then(() => {
     console.log("Connected to database");
-    app.listen(PORT, () => console.log(`App running on port ${PORT}`));
+    httpServer.listen(PORT, () =>
+      console.log(`App running on port ${PORT}`)
+    );
   })
   .catch((err) => console.log(err));
+
+
+io.on("connection", (socket) => {
+  console.log("user connected:" + socket);
+});
