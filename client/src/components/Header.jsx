@@ -4,9 +4,11 @@ import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthProvider";
 import Icon from "./Icon";
 import Avatar from "../components/Avatar";
+import { ChatContext } from "../context/ChatProvider";
 
 const Header = ({ userName }) => {
   const { setUserData, avatar } = useContext(AuthContext);
+  const { dispatch } = useContext(ChatContext);
 
   const handleLogOut = async () => {
     try {
@@ -21,6 +23,7 @@ const Header = ({ userName }) => {
         avatar: "",
       };
       setUserData({ ...emptyData });
+      dispatch({ type: "RESET", payload: {} });
     } catch (error) {
       console.log(error);
     }

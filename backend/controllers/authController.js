@@ -62,10 +62,10 @@ const logIn = async (req, res) => {
       "contacts",
       "_id"
     );
-    const myList = foundUser.contacts.map((contact) => contact._id);
     if (!foundUser)
       return res.status(400).json({ message: "This user doesn't exist!" });
-
+    
+    const myList = foundUser.contacts?.map((contact) => contact._id);
     const goodPassword = await bcrypt.compare(passWord, foundUser.passWord);
     if (!goodPassword)
       return res.status(400).json({ message: "Wrong password!" });

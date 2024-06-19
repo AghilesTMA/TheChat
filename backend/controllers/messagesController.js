@@ -27,7 +27,7 @@ const addMessage = async (req, res) => {
 const getAllMessages = async (req, res) => {
   try {
     const from = req.userId;
-    const { to } = req.body;
+    const { to } = req.params;
     const messages = await Message.find({ users: { $all: [from, to] } }).sort({
       updatedAt: 1,
     });
@@ -38,7 +38,7 @@ const getAllMessages = async (req, res) => {
       }));
       return res.status(200).json({ messages: resMsgs });
     } else {
-      return res.sendStatus(204);
+      return res.status(200).json({messages:[]});
     }
   } catch (error) {
     console.error(error);

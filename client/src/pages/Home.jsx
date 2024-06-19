@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
 import PageContainer from "../components/PageContainer";
-import avatar1 from "../assets/avatar1.png";
 import Icon from "../components/Icon";
 import Avatar from "../components/Avatar";
 import axios from "axios";
 import { ChatContext } from "../context/ChatProvider";
+import chatIll from "../assets/chat.png";
 
-const ChatBody = ({ userName }) => {
+const ChatBody = () => {
   const [msgs, setMsgs] = useState([
     { msg: "hello there!", sender: "achraf" },
     { msg: "hello, how are you doing?", sender: "aghiles" },
@@ -14,78 +14,176 @@ const ChatBody = ({ userName }) => {
     { msg: "I'm good too, thanks for asking!", sender: "aghiles" },
   ]);
 
-  const sendMessage = () => {
+  const sendMessage = async () => {
     if (msg === "") return;
-    setMsgs((prev) => [...prev, { msg: msg, sender: "aghiles" }]);
-    setMsg("");
+    try {
+      const res = await axios({
+        method: "post",
+        url: "http://localhost:3000/messages/addmessage",
+        data: {
+          to: currContact.id,
+          text: msg,
+        },
+        withCredentials: true,
+      });
+      setMsgs((prev) => [...prev, { ...res.data.data }]);
+      setMsg("");
+    } catch (error) {
+      console.log(error);
+    }
   };
-
   const [msg, setMsg] = useState("");
+  const { currContact } = useContext(ChatContext);
+
+  useEffect(() => {
+    const getAllMessages = async () => {
+      try {
+        const res = await axios({
+          method: "get",
+          url: `http://localhost:3000/messages/getmessages/${currContact.id}`,
+          withCredentials: true,
+        });
+        setMsgs(res.data.messages);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    getAllMessages();
+  }, [currContact]);
+
   return (
     <div className=" flex flex-col gap-8">
-      <div className=" flex gap-1 items-center bg-bg-primary p-1 rounded shadow">
-        <img src={avatar1} alt="avatar" className=" w-12 h-12 rounded-full" />
-        <span className=" font-semibold text-xl">{userName}</span>
-      </div>
-
-      <div className=" bg-bg-primary shadow rounded flex flex-col overflow-y-auto overflow-x-hidden max-h-60">
-        {msgs.map((msg, idx) => (
-          <div
-            key={idx}
-            className={`${
-              msg.sender === "aghiles" ? " justify-end" : "justify-start"
-            } flex p-1 font-medium`}
-          >
-            <span
-              className={`${
-                msg.sender === "aghiles"
-                  ? "bg-blue-active text-white"
-                  : " bg-white text-black"
-              } p-2 rounded-xl  max-w-xs `}
-            >
-              {msg.msg}
+      {currContact.id ? (
+        <>
+          <div className=" flex gap-1 items-center bg-bg-primary p-1 rounded shadow">
+            <Avatar
+              avatar={currContact.avatar}
+              className=" w-12 h-12 rounded-full"
+            />
+            <span className=" font-semibold text-xl">
+              {currContact.userName}
             </span>
           </div>
-        ))}
-      </div>
 
-      <div className=" bg-bg-primary flex gap-2 p-2 rounded shadow">
-        <textarea
-          value={msg}
-          onChange={(e) => setMsg(e.target.value)}
-          className=" p-2 w-full rounded-md"
-          name=""
-          id=""
-        ></textarea>
-        <button
-          onClick={sendMessage}
-          className=" bg-blue-active p-4 rounded-xl text-white font-semibold hover:scale-105 active:scale-95"
-        >
-          Send
-        </button>
-      </div>
+          <div className=" bg-bg-primary shadow rounded flex flex-col overflow-y-auto overflow-x-hidden max-h-60">
+            {msgs.length < 1 && (
+              <p className=" font-semibold p-4">
+                Send your first message to{" "}
+                <span className=" text-blue-active">
+                  {currContact.userName}!
+                </span>
+              </p>
+            )}
+            {msgs?.map((msg, idx) => (
+              <div
+                key={idx}
+                className={`${
+                  msg.fromSelf ? " justify-end" : "justify-start"
+                } flex p-1 font-medium`}
+              >
+                <span
+                  className={`${
+                    msg.fromSelf
+                      ? "bg-blue-active text-white"
+                      : " bg-white text-black"
+                  } p-2 rounded-xl  max-w-xs `}
+                >
+                  {msg.text}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          <div className=" bg-bg-primary flex gap-2 p-2 rounded shadow">
+            <textarea
+              value={msg}
+              onChange={(e) => setMsg(e.target.value)}
+              className=" p-2 w-full rounded-md"
+              name=""
+              id=""
+            ></textarea>
+            <button
+              onClick={sendMessage}
+              className=" bg-blue-active p-4 rounded-xl text-white font-semibold hover:scale-105 active:scale-95"
+            >
+              Send
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className=" flex flex-col items-center gap-12 bg-bg-primary p-4">
+          <img src={chatIll} alt="illustration" className=" max-w-xs" />
+          <p className=" font-semibold text-2xl">Please choose your Contact!</p>
+        </div>
+      )}
     </div>
   );
 };
 
-const ContactCard = ({ avatar, userName, contact }) => {
+const ContactCard = ({ avatar, userName, contact, id }) => {
+  const { dispatch } = useContext(ChatContext);
+  const handleAddContact = async () => {
+    try {
+      await axios({
+        method: "patch",
+        url: "http://localhost:3000/users/addcontact",
+        data: {
+          contactId: id,
+        },
+        withCredentials: true,
+      });
+      dispatch({ type: "ADD_CONTACT", payload: id });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleRemoveContact = async () => {
+    try {
+      await axios({
+        method: "patch",
+        url: "http://localhost:3000/users/removecontact",
+        data: {
+          contactId: id,
+        },
+        withCredentials: true,
+      });
+      dispatch({ type: "REMOVE_CONTACT", payload: id });
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleSelectUser = () => {
+    const payload = {
+      id,
+      avatar,
+      userName,
+    };
+    dispatch({ type: "SET_CURR_CONTACT", payload });
+  };
+
   return (
     <div className=" flex gap-2 bg-white p-2 justify-between items-center">
-      <div className=" flex gap-2 cursor-pointer">
+      <div onClick={handleSelectUser} className=" flex gap-2 cursor-pointer">
         <Avatar avatar={avatar} className=" rounded-full w-12 h-1/2" />
         <span className=" font-semibold text-lg">{userName}</span>
       </div>
       <div>
         {contact ? (
-          <Icon
-            type={"removeContact"}
-            className={" cursor-pointer text-xl hover:text-blue-active"}
-          />
+          <div onClick={handleRemoveContact}>
+            <Icon
+              type={"removeContact"}
+              className={" cursor-pointer text-xl hover:text-blue-active"}
+            />
+          </div>
         ) : (
-          <Icon
-            type={"addContact"}
-            className={" cursor-pointer text-xl hover:text-blue-active"}
-          />
+          <div onClick={handleAddContact}>
+            <Icon
+              type={"addContact"}
+              className={" cursor-pointer text-xl hover:text-blue-active"}
+            />
+          </div>
         )}
       </div>
     </div>
@@ -126,6 +224,7 @@ const SearchContact = () => {
       <div className=" flex flex-col gap-2 max-h-64 overflow-auto">
         {contacts?.map((user) => (
           <ContactCard
+            id={user._id}
             key={user._id}
             avatar={user.avatar}
             userName={user.userName}
@@ -161,6 +260,7 @@ const ContactList = () => {
       <div className=" flex flex-col gap-2 p-2 max-h-80 overflow-auto w-full">
         {contacts.map((contact) => (
           <ContactCard
+            id={contact._id}
             key={contact._id}
             avatar={contact.avatar}
             userName={contact.userName}
