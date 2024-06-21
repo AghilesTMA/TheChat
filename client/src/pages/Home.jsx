@@ -64,7 +64,7 @@ const ChatBody = () => {
   }, []);
 
   useEffect(() => {
-    if(!chatRef.current) return
+    if (!chatRef.current) return;
     chatRef.current.scrollTop = chatRef.current.scrollHeight;
   }, [msgs]);
 
@@ -142,6 +142,8 @@ const ChatBody = () => {
 
 const ContactCard = ({ avatar, userName, contact, id }) => {
   const { dispatch } = useContext(ChatContext);
+  const { onlineUsers } = useContext(SocketContext);
+
   const handleAddContact = async () => {
     try {
       await axios({
@@ -187,7 +189,14 @@ const ContactCard = ({ avatar, userName, contact, id }) => {
     <div className=" flex gap-2 bg-white p-2 justify-between items-center">
       <div onClick={handleSelectUser} className=" flex gap-2 cursor-pointer">
         <Avatar avatar={avatar} className=" rounded-full w-12 h-1/2" />
-        <span className=" font-semibold text-lg">{userName}</span>
+        <div className=" flex flex-col">
+          <span className=" font-semibold text-lg">{userName}</span>
+          {onlineUsers.includes(id) ? (
+            <span className=" text-xs text-green-400">online</span>
+          ) : (
+            <span className=" text-xs text-gray-400">offline</span>
+          )}
+        </div>
       </div>
       <div>
         {contact ? (

@@ -4,8 +4,13 @@ import { io } from "socket.io-client";
 
 const SocketContext = createContext();
 
+const socketInfo = {
+  socket: null,
+  onlineUsers: [],
+};
+
 const SocketProvider = ({ children }) => {
-  const [socket, setSocket] = useState();
+  const [socketData, setSocketData] = useState(socketInfo);
   const { id, userName } = useContext(AuthContext);
   useEffect(() => {
     if (id) {
@@ -15,12 +20,15 @@ const SocketProvider = ({ children }) => {
           userName,
         },
       });
-      setSocket(mySocket);
+      setSocketData((prev) => ({ ...prev, socket: mySocket }));
+      mySocket.on("recieve-online-users",arr=>{
+        setSocketData(prev=>({...prev,onlineUsers:arr}));
+      });
       return () => mySocket.close();
     }
   }, [id]);
   return (
-    <SocketContext.Provider value={{ socket }}>
+    <SocketContext.Provider value={{ ...socketData }}>
       {children}
     </SocketContext.Provider>
   );

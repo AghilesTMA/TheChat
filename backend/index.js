@@ -47,7 +47,7 @@ io.on("connection", (socket) => {
   const { userId, userName } = socket.handshake.query;
   console.log(userName, "has connected to ", socket.id);
   onlineUsers.set(userId, socket.id);
-  
+  io.emit("recieve-online-users",[...onlineUsers.keys()]);
   socket.on("send-message", (to, from, msg) => {
     const onlineContact = onlineUsers.get(to);
     if (io.sockets.sockets.has(onlineContact)) {
