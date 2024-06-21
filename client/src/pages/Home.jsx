@@ -1,18 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import PageContainer from "../components/PageContainer";
 import Icon from "../components/Icon";
 import Avatar from "../components/Avatar";
 import axios from "axios";
+import { AuthContext } from "../context/AuthProvider";
 import { ChatContext } from "../context/ChatProvider";
 import chatIll from "../assets/chat.png";
+import { SocketContext } from "../context/SocketProvider";
 
 const ChatBody = () => {
-  const [msgs, setMsgs] = useState([
-    { msg: "hello there!", sender: "achraf" },
-    { msg: "hello, how are you doing?", sender: "aghiles" },
-    { msg: "I'm fine, hope you're doing well too!", sender: "achraf" },
-    { msg: "I'm good too, thanks for asking!", sender: "aghiles" },
-  ]);
+  const [msgs, setMsgs] = useState([]);
+  const { socket } = useContext(SocketContext);
+  const { currContact } = useContext(ChatContext);
+  const [msg, setMsg] = useState("");
+  const { id } = useContext(AuthContext);
+  const chatRef = useRef(null);
 
   const sendMessage = async () => {
     if (msg === "") return;
@@ -26,14 +28,13 @@ const ChatBody = () => {
         },
         withCredentials: true,
       });
+      socket.emit("send-message", currContact.id, id, msg);
       setMsgs((prev) => [...prev, { ...res.data.data }]);
       setMsg("");
     } catch (error) {
       console.log(error);
     }
   };
-  const [msg, setMsg] = useState("");
-  const { currContact } = useContext(ChatContext);
 
   useEffect(() => {
     const getAllMessages = async () => {
@@ -48,8 +49,24 @@ const ChatBody = () => {
         console.log(error);
       }
     };
-    getAllMessages();
+    if (currContact.id) {
+      getAllMessages();
+    }
   }, [currContact]);
+
+  useEffect(() => {
+    if (socket) {
+      socket.on("recieve-msg", (_, msg) => {
+        console.log("you recieved a message:", msg);
+        setMsgs((prev) => [...prev, { fromSelf: false, text: msg }]);
+      });
+    }
+  }, []);
+
+  useEffect(() => {
+    if(!chatRef.current) return
+    chatRef.current.scrollTop = chatRef.current.scrollHeight;
+  }, [msgs]);
 
   return (
     <div className=" flex flex-col gap-8">
@@ -65,7 +82,10 @@ const ChatBody = () => {
             </span>
           </div>
 
-          <div className=" bg-bg-primary shadow rounded flex flex-col overflow-y-auto overflow-x-hidden max-h-60">
+          <div
+            ref={chatRef}
+            className=" bg-bg-primary shadow rounded flex flex-col overflow-y-auto overflow-x-hidden max-h-60"
+          >
             {msgs.length < 1 && (
               <p className=" font-semibold p-4">
                 Send your first message to{" "}
@@ -309,7 +329,7 @@ const Home = () => {
           <Contacts />
         </div>
         <div className=" col-span-8">
-          <ChatBody userName={"Achraf Safi"} />
+          <ChatBody />
         </div>
       </div>
     </PageContainer>

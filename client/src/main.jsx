@@ -4,13 +4,14 @@ import App from "./App.jsx";
 import "./index.css";
 import AuthProvider from "./context/AuthProvider.jsx";
 import ChatProvider from "./context/ChatProvider.jsx";
+import SocketProvider from "./context/SocketProvider.jsx";
 
 ReactDOM.createRoot(document.getElementById("root")).render(
-  <React.StrictMode>
-    <ChatProvider>
-      <AuthProvider>
+  <ChatProvider>
+    <AuthProvider>
+      <SocketProvider>
         <App />
-      </AuthProvider>
-    </ChatProvider>
-  </React.StrictMode>
+      </SocketProvider>
+    </AuthProvider>
+  </ChatProvider>
 );

@@ -13,7 +13,11 @@ import { Server } from "socket.io";
 
 const app = express();
 const httpServer = createServer(app);
-const io = new Server(httpServer,{});
+export const io = new Server(httpServer, {
+  cors: {
+    origin: "http://localhost:5173",
+  },
+});
 
 app.use(Credentials);
 const whiteList = ["http://localhost:5173"];
@@ -33,13 +37,21 @@ mongoose
   .connect(process.env.DB_URI)
   .then(() => {
     console.log("Connected to database");
-    httpServer.listen(PORT, () =>
-      console.log(`App running on port ${PORT}`)
-    );
+    httpServer.listen(PORT, () => console.log(`App running on port ${PORT}`));
   })
   .catch((err) => console.log(err));
 
+const onlineUsers = new Map();
 
 io.on("connection", (socket) => {
-  console.log("user connected:" + socket);
+  const { userId, userName } = socket.handshake.query;
+  console.log(userName, "has connected to ", socket.id);
+  onlineUsers.set(userId, socket.id);
+  
+  socket.on("send-message", (to, from, msg) => {
+    const onlineContact = onlineUsers.get(to);
+    if (io.sockets.sockets.has(onlineContact)) {
+      io.to(onlineContact).emit("recieve-msg",from, msg);
+    }
+  });
 });

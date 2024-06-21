@@ -13,6 +13,7 @@ const addMessage = async (req, res) => {
       },
     };
     const newMessage = await Message.create({ ...messageData });
+
     if (newMessage) {
       return res.status(200).json({
         message: "message sent  successfully!",
