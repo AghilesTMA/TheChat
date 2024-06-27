@@ -6,7 +6,6 @@ import { AuthContext } from "../context/AuthProvider";
 import { ChatContext } from "../context/ChatProvider";
 import PassWordEye from "../components/PassWordEye";
 
-
 const LogIn = () => {
   const [email, setEmail] = useState("");
   const [passWord, setPassWord] = useState("");
@@ -19,7 +18,7 @@ const LogIn = () => {
     try {
       const res = await axios({
         method: "post",
-        url: "http://localhost:3000/auth/login",
+        url: "api/auth/login",
         data: {
           email,
           passWord,

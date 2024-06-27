@@ -14,7 +14,7 @@ const Header = ({ userName }) => {
     try {
       await axios({
         method: "get",
-        url: "http://localhost:3000/auth/logout",
+        url: "api/auth/logout",
         withCredentials: true,
       });
       const emptyData = {

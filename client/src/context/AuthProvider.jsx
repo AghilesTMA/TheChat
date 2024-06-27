@@ -17,13 +17,13 @@ const AuthProvider = ({ children }) => {
       try {
         const res = await axios({
           method: "get",
-          url: "http://localhost:3000/auth/verifylogin",
+          url: "api/auth/verifylogin",
           withCredentials: true,
         });
 
         const listRes = await axios({
           method: "get",
-          url: "http://localhost:3000/users/myList",
+          url: "api/users/myList",
           withCredentials: true,
         });
 
