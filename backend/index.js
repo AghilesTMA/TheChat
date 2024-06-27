@@ -54,4 +54,9 @@ io.on("connection", (socket) => {
       io.to(onlineContact).emit("recieve-msg",from, msg);
     }
   });
+  socket.on("disconnect",()=>{
+    console.log(userName,"disconnected");
+    onlineUsers.delete(userId);
+    io.emit("recieve-online-users",[...onlineUsers.keys()]);                   
+  });
 });

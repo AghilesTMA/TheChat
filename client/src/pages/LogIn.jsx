@@ -4,12 +4,15 @@ import InputField from "../components/InputField";
 import axios from "axios";
 import { AuthContext } from "../context/AuthProvider";
 import { ChatContext } from "../context/ChatProvider";
+import PassWordEye from "../components/PassWordEye";
+
 
 const LogIn = () => {
   const [email, setEmail] = useState("");
   const [passWord, setPassWord] = useState("");
   const { setUserData } = useContext(AuthContext);
   const { dispatch } = useContext(ChatContext);
+  const [closed, setClosed] = useState(true);
 
   const handleLogIn = async (e) => {
     e.preventDefault();
@@ -49,12 +52,17 @@ const LogIn = () => {
             type={"email"}
             label={"email: "}
           />
-          <InputField
-            value={passWord}
-            setValue={setPassWord}
-            type={"password"}
-            label={"password: "}
-          />
+          <div className=" relative w-full">
+            <InputField
+              value={passWord}
+              setValue={setPassWord}
+              type={`${closed ? "password" : "text"}`}
+              label={"password: "}
+            />
+            <div onClick={() => setClosed((prev) => !prev)}>
+              <PassWordEye closed={closed} />
+            </div>
+          </div>
           <button
             type="submit"
             className="py-2 px-6 shadow text-white font-semibold bg-blue-primary rounded"

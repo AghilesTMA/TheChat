@@ -6,6 +6,7 @@ import avatar2 from "../assets/avatar2.png";
 import avatar3 from "../assets/avatar3.png";
 import axios from "axios";
 import { AuthContext } from "../context/AuthProvider";
+import PassWordEye from "../components/PassWordEye";
 
 const SignUp = () => {
   const avatars = [avatar1, avatar2, avatar3];
@@ -14,6 +15,7 @@ const SignUp = () => {
   const [passWord, setPassWord] = useState("");
   const [avatar, setAvatar] = useState("avatar1");
   const { setUserData } = useContext(AuthContext);
+  const [closed, setClosed] = useState(true);
 
   const handleSignUp = async (e) => {
     e.preventDefault();
@@ -29,7 +31,7 @@ const SignUp = () => {
         },
         withCredentials: true,
       });
-      setUserData({...res.data.data});
+      setUserData({ ...res.data.data });
     } catch (error) {
       console.log(error);
     }
@@ -55,12 +57,17 @@ const SignUp = () => {
             type={"email"}
             label={"email: "}
           />
-          <InputField
-            value={passWord}
-            setValue={setPassWord}
-            type={"password"}
-            label={"password: "}
-          />
+          <div className=" relative w-full">
+            <InputField
+              value={passWord}
+              setValue={setPassWord}
+              type={`${closed ? "password" : "text"}`}
+              label={"password: "}
+            />
+            <div onClick={() => setClosed((prev) => !prev)}>
+              <PassWordEye closed={closed} />
+            </div>
+          </div>
 
           <div className=" flex flex-col gap-2">
             <h3 className=" font-medium text-lg">select you avatar: </h3>

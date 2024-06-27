@@ -22,7 +22,6 @@ const Router = () => {
           path="/signup"
           element={!id ? <SignUp /> : <Navigate to={"/"} />}
         />
-        <Route path="/profile/:id" element={`Profile`} />
         <Route path="*" element={<Navigate to={"/"} />} />
       </Routes>
     </div>
