@@ -186,7 +186,7 @@ const ContactCard = ({ avatar, userName, contact, id }) => {
   };
 
   return (
-    <div className=" flex gap-2 bg-white p-2 justify-between items-center">
+    <div className=" flex gap-2 min-w-52 lg:min-w-0 bg-white p-2 justify-between items-center">
       <div onClick={handleSelectUser} className=" flex gap-2 cursor-pointer">
         <Avatar avatar={avatar} className=" rounded-full w-12 h-1/2" />
         <div className=" flex flex-col">
@@ -250,7 +250,7 @@ const SearchContact = () => {
         className=" p-2 rounded-full shadow w-full"
         placeholder="Type the name"
       />
-      <div className=" flex flex-col gap-2 max-h-64 overflow-auto">
+      <div className=" flex md:flex-col gap-2 max-h-64 overflow-auto">
         {contacts?.map((user) => (
           <ContactCard
             id={user._id}
@@ -286,7 +286,7 @@ const ContactList = () => {
   }, []);
   return (
     <div className=" p-2 bg-bg-primary w-full">
-      <div className=" flex flex-col gap-2 p-2 max-h-80 overflow-auto w-full">
+      <div className=" flex md:flex-col gap-2 p-2 max-h-80 overflow-auto w-full">
         {contacts.map((contact) => (
           <ContactCard
             id={contact._id}
@@ -333,7 +333,7 @@ const Contacts = () => {
 const Home = () => {
   return (
     <PageContainer>
-      <div className=" bg-white rounded p-2 w-[80%] shadow grid grid-cols-12 gap-8">
+      <div className=" bg-white rounded p-2 w-full md:w-[80%] shadow flex flex-col md:grid grid-cols-12 gap-8">
         <div className=" col-span-4">
           <Contacts />
         </div>

@@ -37,7 +37,9 @@ const Header = ({ userName }) => {
       <div className=" flex items-center gap-2">
         {userName && (
           <>
-            <h3 className=" font-semibold text-lg">Hello {userName}!</h3>
+            <h3 className=" hidden md:inline-block font-semibold text-lg">
+              Hello {userName}!
+            </h3>
             <button onClick={handleLogOut}>
               <Icon
                 type={"logOut"}
